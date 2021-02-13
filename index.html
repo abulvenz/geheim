@@ -9,7 +9,64 @@
 </head>
 
 <body>
-    <script src="main.js"></script>
+    <div class="container">
+        <h1>Geheimer gehts nicht</h1>
+        <article>
+            <p>
+                Um etwas sicher zu verschlüsseln braucht man nicht viele Elemente. Die Grundlage bietet der <a href="https://de.wikipedia.org/wiki/One-Time-Pad">One-Time-Pad</a>-Algorithmus. Nehmen wir den Beispieltext
+            </p>
+            <pre>Das Pferd frißt keinen Kartoffelsalat.</pre>
+            <p> Dieser Text sind für den Computer ja alles Zahlen, z.B. nach der
+                <a href="https://de.wikipedia.org/wiki/American_Standard_Code_for_Information_Interchange">ASCII-Tabelle</a>. Los geht es mit A=65. Das große D entspricht also 68, usw.
+            </p>
+            <pre>68,97,115,32,80,102,101,114,100,32,102,114,105,223,116,32,107,101,105,110,101,110,32,75,97,114,116,111,102,102,101,108,115,97,108,97,116,46</pre>
+
+            <p>Wie man sieht, wurden auch die Leerzeichen(32) und Satzzeichen(46) in Zahlen verwandelt. Danach erzeugen wir einen zufälligen Schlüssel, z.B.
+            </p>
+            <pre>230,118,91,53,246,207,238,69,103,251,179,182,95,159,42,195,183,88,38,185,194,235,177,128,12,197,216,20,184,126,223,13,81,202,199,107,97,194</pre>
+            <p>Das wichtige ist, dass dieser Schlüssel genauso lang ist wie der Eingabetext. Und zufällig muss er sein, bzw. darf er kein erkennbares Muster haben. Da das One-Time-Pad ein symmetrisches Verfahren ist, benötigt man denselben Schlüssel für
+                die Verschlüsselung wie auch die Entschlüsselung. Wenn der Schlüssel diesen Voraussetzungen genügt, dann ist das Verfahren erwiesenermaßen unknackbar. Als nächstes wird der Verschlüsselungsschritt ausgeführt, als C=T^K, wobei C der verschlüsselte
+                Text(Code) ist, T der originale Text und K der Schlüssel. Der Operator ^ ist das exklusive Oder zwischen jeweils zwei Stellen der binären Repräsentation. Wie das mit dem binären Zählen mit Fingern aussieht, habe ich schon mal <a href="http://abulvenz.github.io/counting-binary">hier</a>                beschrieben.
+            </p>
+            <div id="xor">
+                <noscript>Hier würde mit Javascript eine Tabelle angezeigt. Javascript ist in diesem Fall total
+                    übertrieben, aber zuerst wollte ich die Tabelle viel größer machen.</noscript>
+            </div>
+            <p>
+                Für jedes Bit wird diese Verknüpfungstabelle angewendet, wobei das T-Textbit und das K-Schlüsselbit die äußeren Fettgedruckten Zahlen sind und das Ergebnis C aus der Tabelle abzulesen ist. Das Ergebnis wird weiterhin als Zahl aufgefasst.
+            </p>
+            <pre>162,23,40,21,166,169,139,55,3,219,213,196,54,64,94,227,220,61,79,215,167,133,145,203,109,183,172,123,222,24,186,97,34,171,171,10,21,236</pre>
+            <p>
+                Ich mache für die erste Zahl mal eine Beispielrechnung, wie das Ergebnis zustande kommt. Die Zahl 68 im Binärsystem ist
+            </p>
+            <pre>T = 68 = 64 + 4 = 2^6 + 2^2 = 1000100</pre>
+            <p>Die Zahl 230 im Binärsystem ist</p>
+            <pre>K = 230 = 128+64+32+4+2 = 2^7 + 2^6 + 2^5 + 2^2 + 2^1 = 11100110</pre>
+            <p>Jetzt kommt die XOR Operation</p>
+            <pre>C = K^T = 01000100 XOR 11100110 = 10100010 = 2^7 + 2^5 + 2^1 = 128 + 32 + 2 = 162</pre>
+            <p>Die XOR Operation kann auch durch andere Operationen, wie z.b. die Addition ersetzt werden. Dann muss man eben aufpassen, dass der Wertebereich nicht verlassen wird. Die XOR-Verknüpfung kann niemals das Interval der beiden Eingabezahlen verlassen.</p>
+            <p>Wie man sich vorstellen kann ist jede Zahl T nicht mehr für jemanden zu erraten, der nicht K kennt, denn aus C kann sich mit beliebig gewähltem K jedes Element aus T erreichen lassen. Wie wichtig es ist, dass der Schlüssel einmalig verwendet
+                wird und sich auch nicht wiederholt, zeigt Douglas Crockford in diesem Video <a href="https://youtu.be/zKuFu19LgZA?t=1145">auf Youtube</a>. </p>
+            <p>Einen kleinen Schönheitsfehler hat unsere Zahlenrepräsentation noch: Sie besteht aus unterschiedlich langen Zahlen. Dadurch wird ein Trennzeichen notwendig.</p>
+            <p>Da Schlüssel und Text hier so gewählt sind, dass sie und damit auch das verschlüsselte Ergebnis zwischen 0-255 liegen, lassen sie sich auch als Hexadezimalzahlen kodieren. Dann sieht die Repräsentation so aus, jede Zahl von oben entspricht
+                zwei Stellen: </p>
+            <pre>a2172815a6a98b3703dbd5c436405ee3dc3d4fd7a78591cb6db7ac7bde18ba6122abab0a15ec</pre>
+            <p>Im Hexadezimalsystem benötigt man 16 Ziffern, weshalb man die Buchstaben bemüht und wie folgt zählt:</p>
+            <pre>0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,10,...</pre>
+            <p>Wieder ein Beispiel für die erste Stelle: </p>
+            <pre>162 = 16 ^ 1 * 10 + 16 ^ 0 * 2 = a2</pre>
+            <p>Also. Gut. Unknackbar. Das ist doch das was man will. Das Verfahren ist auch sehr sehr schnell.</p>
+            <h3>Was fehlt uns also?</h3>
+            <p>Hier weiterschreiben.</p>
+        </article>
+
+        <h2>Teste es</h2>
+        <div id="crypt">
+            <noscript>Hier würde mit Javascript ein Live-Beispiel angezeigt werden.</noscript>
+        </div>
+        <script src="main.js"></script>
+        <script src="xor.js"></script>
+    </div>
 </body>
 
 </html>

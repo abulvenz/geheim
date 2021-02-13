@@ -1,0 +1,1 @@
+export const range = (S, N, r = []) => (S === N ? r : range(S + (N > S ? 1 : -1), N, [...r, S]));
